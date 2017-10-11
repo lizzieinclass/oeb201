@@ -1,5 +1,6 @@
 ### Week 5 - 11 October 2017
-# Meghan Blumstein, Cat Chamberlain, and Dave Matthews 
+# Meghan Blumstein, Cat Chamberlain, and Dave Matthews
+# Whee!
 
 # Clear workspace
 rm(list=ls()) # remove everything currently held in the R memory

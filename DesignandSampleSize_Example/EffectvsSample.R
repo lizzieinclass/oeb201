@@ -2,6 +2,11 @@
 ## Simulating the difference between effect size and sample size in a power analysis
 
 
+# Clear workspace
+rm(list=ls()) # remove everything currently held in the R memory
+options(stringsAsFactors=FALSE)
+graphics.off()
+
 ### The power of Sunny Delight
 ## Kids who drink sunny d at a young age are more likely to be happier adults
 ## In our example, if a child drinks 1 bottle of sunny d a week at the age of 5, 
@@ -17,12 +22,12 @@ library(gridExtra)
 ## What is the effect size in this example?
 ES = (55-45)/5 ## ES = 2
 SE = 5/(sqrt(1000)) ## SE = 0.16
-## What about when we double the effect size?
-ES = (90-45)/5 ## ES = 9
+## What about when we triple the effect size?
+ES = (75-45)/5 ## ES = 6
 SE = 5/(sqrt(1000)) ## SE stays the same
-## How about when we double the sample size?
+## How about when we triple the sample size?
 ES = (55-45)/5 ## ES is 2 like before but... 
-SE = 5/(sqrt(2000)) ## SE decreases slightly - SE = 0.11
+SE = 5/(sqrt(3000)) ## SE decreases slightly - SE = 0.09
 
 ### Andrew states that " it is generally better to double the effect size [theta] than to double the sample size [n]"
 ## here we can see that doubling the sample size decreases the standard error at a slower rate than doubling the effect size
@@ -55,27 +60,27 @@ for (i in 1:length(ntot)){
 hist(fake$dp[sunny==1])
 hist(fake$dp[sunny==2])        
 mean(fake$dp) # 50.5
-sd(fake$dp) # 7.03
+sd(fake$dp) # 7.24
 display(lm(dp~sunny, data=fake))
 #lm(formula = dp ~ sunny, data = fake)
 #coef.est coef.se
-#(Intercept) 45.52     0.22  
-#sunny2      10.02     0.31  
+#(Intercept) 45.33     0.23  
+#sunny2      10.25     0.32  
 #---
 #  n = 1000, k = 2
-#residual sd = 4.94, R-Squared = 0.51
+#residual sd = 5.11, R-Squared = 0.50
 
 
-### Alright, now let's double the effect size...
-### Sunny D increases the level of dopamine to 90 ng/ml - we'll keep the sample size the same
+### Alright, now let's triple the effect size...
+### Sunny D increases the level of dopamine to 75 ng/ml - we'll keep the sample size the same
 nsunny.e = 2
 rep.e = 500
 ntot.e = nsunny.e*rep.e
 sunny.e = gl(nsunny.e, rep.e, length=ntot.e)
 
-sunnydiff.e = 45
+sunnydiff.e = 30
 sunnydiff.sd.e = 0
-suns.e<-rnorm(ntot.e, 90, 5)
+suns.e<-rnorm(ntot.e, 75, 5)
 
 base.e <- 45
 child.e <- base.e + suns.e-mean(suns.e)
@@ -93,21 +98,21 @@ for (i in 1:length(ntot.e)){
 }
 hist(fake.e$dp.e[sunny.e==1])
 hist(fake.e$dp.e[sunny.e==2])
-mean(fake.e$dp.e) # 62.9
-sd(fake.e$dp.e) # 23.0
+mean(fake.e$dp.e) # 61.2
+sd(fake.e$dp.e) # 15.9
 display(lm(dp.e~sunny.e, data=fake.e))
 #lm(formula = dp.e ~ sunny.e, data = fake.e)
 #coef.est coef.se
-#(Intercept) 40.48     0.22  
-#sunny.e2    44.76     0.31  
+#(Intercept) 46.04     0.22  
+#sunny.e2    30.24     0.31  
 #---
 #  n = 1000, k = 2
-#residual sd = 4.97, R-Squared = 0.95
+#residual sd = 4.94, R-Squared = 0.90
 
 
-## And now, we double the sample size...
+## And now, we triple the sample size...
 nsunny.s = 2
-rep.s = 1000
+rep.s = 1500
 ntot.s = nsunny.s*rep.s
 sunny.s = gl(nsunny.s, rep.s, length=ntot.s)
 
@@ -130,37 +135,37 @@ for (i in 1:length(ntot.s)){
   fake.s <- data.frame(dp.s=dp.s, sunny.s=sunny.s)  
 }
 hist(fake.s$dp.s)        
-mean(fake.s$dp.s) # 48.2
-sd(fake.s$dp.s) # 6.88
+mean(fake.s$dp.s) # 52.8
+sd(fake.s$dp.s) # 6.93
 display(lm(dp.s~sunny.s, data=fake.s))
 #lm(formula = dp.s ~ sunny.s, data = fake.s)
 #coef.est coef.se
-#(Intercept) 43.29     0.15  
-#sunny.s2     9.75     0.22  
+#(Intercept) 48.01     0.13  
+#sunny.s2     9.66     0.18  
 #---
-#  n = 2000, k = 2
-#residual sd = 4.85, R-Squared = 0.50
+#  n = 3000, k = 2
+#residual sd = 4.97, R-Squared = 0.49
 
 
 #### Let's plot the effects!
 fake$sunny<-ifelse(fake$sunny==1, "control", "sunnyD")
 base<- qplot(sunny, dp, data = fake, geom="boxplot", color=sunny) +
-  xlab("Sunny D consumption") + ylab("Dopamine levels (ng/ml)") + ylim(35,90)
+  xlab("Sunny D consumption") + ylab("Dopamine levels (ng/ml)") + ylim(30,85)
 
 fake.e$sunny.e<-ifelse(fake.e$sunny.e==1, "control", "sunnyD")
 effect<- qplot(sunny.e, dp.e, data = fake.e, geom="boxplot", color=sunny.e) +
-  xlab("Sunny D consumption") + ylab("Dopamine levels (ng/ml)") + ylim(35,90)
+  xlab("Sunny D consumption") + ylab("Dopamine levels (ng/ml)") + ylim(30,85)
 
 fake.s$sunny.s<-ifelse(fake.s$sunny.s==1, "control", "sunnyD")
 sample<- qplot(sunny.s, dp.s, data = fake.s, geom="boxplot", color=sunny.s) +
-  xlab("Sunny D consumption") + ylab("Dopamine levels (ng/ml)") + ylim(35,90)
+  xlab("Sunny D consumption") + ylab("Dopamine levels (ng/ml)") + ylim(30,85)
 
 grid.arrange(base, effect, sample, ncol=3, nrow=1)
 
 
 fake$child<- as.numeric(sample(1000))
 fake.e$child.e<-as.numeric(sample(1000))
-fake.s$child.s<-as.numeric(sample(2000))
+fake.s$child.s<-as.numeric(sample(3000))
 
 bg<-ggplot(fake, aes(x=child, y=dp)) + geom_point(aes(color=sunny)) + geom_smooth(method="lm")  
 #bh<-hist(fake$dp)

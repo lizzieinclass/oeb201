@@ -21,20 +21,20 @@ library(gridExtra)
 
 ## What is the effect size in this example?
 ES = (55-45)/5 ## ES = 2
-SE = 5/(sqrt(1000)) ## SE = 0.16
+SE = 5/(sqrt(100)) ## SE = 0.16
 ## What about when we triple the effect size?
 ES = (75-45)/5 ## ES = 6
-SE = 5/(sqrt(1000)) ## SE stays the same
+SE = 5/(sqrt(100)) ## SE stays the same
 ## How about when we triple the sample size?
 ES = (55-45)/5 ## ES is 2 like before but... 
-SE = 5/(sqrt(3000)) ## SE decreases slightly - SE = 0.09
+SE = 5/(sqrt(300)) ## SE decreases slightly - SE = 0.09
 
 ### Andrew states that " it is generally better to double the effect size [theta] than to double the sample size [n]"
 ## here we can see that doubling the sample size decreases the standard error at a slower rate than doubling the effect size
 # The SE: effect size influences the numerator, sample size influences the denominator     
     
 nsunny = 2
-rep = 500
+rep = 50
 ntot = nsunny*rep
 sunny = gl(nsunny, rep, length=ntot)
 
@@ -59,22 +59,23 @@ for (i in 1:length(ntot)){
 
 hist(fake$dp[sunny==1])
 hist(fake$dp[sunny==2])        
-mean(fake$dp) # 50.5
-sd(fake$dp) # 7.24
-display(lm(dp~sunny, data=fake))
+mean(fake$dp) # 47.2
+sd(fake$dp) # 7.05
+mod.base<-lm(dp~sunny, data=fake)
+display(mod.base)
 #lm(formula = dp ~ sunny, data = fake)
 #coef.est coef.se
-#(Intercept) 45.33     0.23  
-#sunny2      10.25     0.32  
+#(Intercept) 42.55     0.75  
+#sunny2       9.37     1.06  
 #---
-#  n = 1000, k = 2
-#residual sd = 5.11, R-Squared = 0.50
+#  n = 100, k = 2
+#residual sd = 5.28, R-Squared = 0.45
 
 
 ### Alright, now let's triple the effect size...
 ### Sunny D increases the level of dopamine to 75 ng/ml - we'll keep the sample size the same
 nsunny.e = 2
-rep.e = 500
+rep.e = 50
 ntot.e = nsunny.e*rep.e
 sunny.e = gl(nsunny.e, rep.e, length=ntot.e)
 
@@ -98,21 +99,22 @@ for (i in 1:length(ntot.e)){
 }
 hist(fake.e$dp.e[sunny.e==1])
 hist(fake.e$dp.e[sunny.e==2])
-mean(fake.e$dp.e) # 61.2
-sd(fake.e$dp.e) # 15.9
-display(lm(dp.e~sunny.e, data=fake.e))
+mean(fake.e$dp.e) # 54.7
+sd(fake.e$dp.e) # 16.3
+mod.e<-lm(dp.e~sunny.e, data=fake.e)
+display(mod.e)
 #lm(formula = dp.e ~ sunny.e, data = fake.e)
 #coef.est coef.se
-#(Intercept) 46.04     0.22  
-#sunny.e2    30.24     0.31  
+#(Intercept) 39.12     0.65  
+#sunny.e2    31.20     0.92  
 #---
-#  n = 1000, k = 2
-#residual sd = 4.94, R-Squared = 0.90
+#  n = 100, k = 2
+#residual sd = 4.62, R-Squared = 0.92
 
 
 ## And now, we triple the sample size...
 nsunny.s = 2
-rep.s = 1500
+rep.s = 150
 ntot.s = nsunny.s*rep.s
 sunny.s = gl(nsunny.s, rep.s, length=ntot.s)
 
@@ -135,16 +137,42 @@ for (i in 1:length(ntot.s)){
   fake.s <- data.frame(dp.s=dp.s, sunny.s=sunny.s)  
 }
 hist(fake.s$dp.s)        
-mean(fake.s$dp.s) # 52.8
-sd(fake.s$dp.s) # 6.93
-display(lm(dp.s~sunny.s, data=fake.s))
+mean(fake.s$dp.s) # 45.1
+sd(fake.s$dp.s) # 7.42
+mod.s<-lm(dp.s~sunny.s, data=fake.s)
+display(mod.s)
 #lm(formula = dp.s ~ sunny.s, data = fake.s)
 #coef.est coef.se
-#(Intercept) 48.01     0.13  
-#sunny.s2     9.66     0.18  
+#(Intercept) 40.05     0.44  
+#sunny.s2    10.17     0.62  
 #---
-#  n = 3000, k = 2
-#residual sd = 4.97, R-Squared = 0.49
+#  n = 300, k = 2
+#residual sd = 5.40, R-Squared = 0.47
+
+display(mod.base);display(mod.e);display(mod.s)
+#lm(formula = dp ~ sunny, data = fake)
+#coef.est coef.se
+#(Intercept) 42.55     0.75  
+#sunnysunnyD  9.37     1.06  
+#---
+#  n = 100, k = 2
+#residual sd = 5.28, R-Squared = 0.45
+
+#lm(formula = dp.e ~ sunny.e, data = fake.e)
+#coef.est coef.se
+#(Intercept)   39.12     0.65  
+#sunny.esunnyD 31.20     0.92  
+#---
+#  n = 100, k = 2
+#residual sd = 4.62, R-Squared = 0.92
+
+#lm(formula = dp.s ~ sunny.s, data = fake.s)
+#coef.est coef.se
+#(Intercept)   40.05     0.44  
+#sunny.ssunnyD 10.17     0.62  
+#---
+#  n = 300, k = 2
+#residual sd = 5.40, R-Squared = 0.47
 
 
 #### Let's plot the effects!
@@ -163,9 +191,9 @@ sample<- qplot(sunny.s, dp.s, data = fake.s, geom="boxplot", color=sunny.s) +
 grid.arrange(base, effect, sample, ncol=3, nrow=1)
 
 
-fake$child<- as.numeric(sample(1000))
-fake.e$child.e<-as.numeric(sample(1000))
-fake.s$child.s<-as.numeric(sample(3000))
+fake$child<- as.numeric(sample(100))
+fake.e$child.e<-as.numeric(sample(100))
+fake.s$child.s<-as.numeric(sample(300))
 
 bg<-ggplot(fake, aes(x=child, y=dp)) + geom_point(aes(color=sunny)) + geom_smooth(method="lm")  
 #bh<-hist(fake$dp)

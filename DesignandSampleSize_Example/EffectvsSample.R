@@ -27,11 +27,9 @@ ES = (75-45)/5 ## ES = 6
 SE = 5/(sqrt(100)) ## SE stays the same
 ## How about when we triple the sample size?
 ES = (55-45)/5 ## ES is 2 like before but... 
-SE = 5/(sqrt(300)) ## SE decreases slightly - SE = 0.09
+SE = 5/(sqrt(300)) ## SE decreases slightly: SE = 0.09
 
 ### Andrew states that " it is generally better to double the effect size [theta] than to double the sample size [n]"
-## here we can see that doubling the sample size decreases the standard error at a slower rate than doubling the effect size
-# The SE: effect size influences the numerator, sample size influences the denominator     
     
 nsunny = 2
 rep = 50
@@ -59,17 +57,21 @@ for (i in 1:length(ntot)){
 
 hist(fake$dp[sunny==1])
 hist(fake$dp[sunny==2])        
-mean(fake$dp) # 47.2
-sd(fake$dp) # 7.05
+mean(fake$dp) # 55.1
+sd(fake$dp) # 6.81
 mod.base<-lm(dp~sunny, data=fake)
+con.b<-confint(mod.base)
+#                  2.5 %   97.5 %
+#  (Intercept) 48.881375 51.55855
+#sunny2       7.831918 11.61802
 display(mod.base)
 #lm(formula = dp ~ sunny, data = fake)
 #coef.est coef.se
-#(Intercept) 42.55     0.75  
-#sunny2       9.37     1.06  
+#(Intercept) 50.22     0.67  
+#sunny2       9.72     0.95  
 #---
 #  n = 100, k = 2
-#residual sd = 5.28, R-Squared = 0.45
+#residual sd = 4.77, R-Squared = 0.51
 
 
 ### Alright, now let's triple the effect size...
@@ -99,17 +101,21 @@ for (i in 1:length(ntot.e)){
 }
 hist(fake.e$dp.e[sunny.e==1])
 hist(fake.e$dp.e[sunny.e==2])
-mean(fake.e$dp.e) # 54.7
-sd(fake.e$dp.e) # 16.3
+mean(fake.e$dp.e) # 61.7
+sd(fake.e$dp.e) # 16.0
 mod.e<-lm(dp.e~sunny.e, data=fake.e)
+con.e<-confint(mod.e)
+#                2.5 %   97.5 %
+#  (Intercept) 45.21370 48.06006
+#sunny.e2    28.19994 32.22528
 display(mod.e)
 #lm(formula = dp.e ~ sunny.e, data = fake.e)
 #coef.est coef.se
-#(Intercept) 39.12     0.65  
-#sunny.e2    31.20     0.92  
+#(Intercept) 46.64     0.72  
+#sunny.e2    30.21     1.01  
 #---
 #  n = 100, k = 2
-#residual sd = 4.62, R-Squared = 0.92
+#residual sd = 5.07, R-Squared = 0.90
 
 
 ## And now, we triple the sample size...
@@ -137,43 +143,55 @@ for (i in 1:length(ntot.s)){
   fake.s <- data.frame(dp.s=dp.s, sunny.s=sunny.s)  
 }
 hist(fake.s$dp.s)        
-mean(fake.s$dp.s) # 45.1
-sd(fake.s$dp.s) # 7.42
+mean(fake.s$dp.s) # 49.1
+sd(fake.s$dp.s) # 7.24
 mod.s<-lm(dp.s~sunny.s, data=fake.s)
+con.s<-confint(mod.s)
+#                2.5 %   97.5 %
+#  (Intercept) 42.92434 44.47973
+#sunny.s2     9.66472 11.86437
 display(mod.s)
 #lm(formula = dp.s ~ sunny.s, data = fake.s)
 #coef.est coef.se
-#(Intercept) 40.05     0.44  
-#sunny.s2    10.17     0.62  
+#(Intercept) 43.70     0.40  
+#sunny.s2    10.76     0.56  
 #---
 #  n = 300, k = 2
-#residual sd = 5.40, R-Squared = 0.47
+#residual sd = 4.84, R-Squared = 0.55
 
 display(mod.base);display(mod.e);display(mod.s)
 #lm(formula = dp ~ sunny, data = fake)
 #coef.est coef.se
-#(Intercept) 42.55     0.75  
-#sunnysunnyD  9.37     1.06  
+#(Intercept) 50.22     0.67  
+#sunny2       9.72     0.95  
 #---
 #  n = 100, k = 2
-#residual sd = 5.28, R-Squared = 0.45
-
+#residual sd = 4.77, R-Squared = 0.51
 #lm(formula = dp.e ~ sunny.e, data = fake.e)
 #coef.est coef.se
-#(Intercept)   39.12     0.65  
-#sunny.esunnyD 31.20     0.92  
+#(Intercept) 46.64     0.72  
+#sunny.e2    30.21     1.01  
 #---
 #  n = 100, k = 2
-#residual sd = 4.62, R-Squared = 0.92
-
+#residual sd = 5.07, R-Squared = 0.90
 #lm(formula = dp.s ~ sunny.s, data = fake.s)
 #coef.est coef.se
-#(Intercept)   40.05     0.44  
-#sunny.ssunnyD 10.17     0.62  
+#(Intercept) 43.70     0.40  
+#sunny.s2    10.76     0.56  
 #---
 #  n = 300, k = 2
-#residual sd = 5.40, R-Squared = 0.47
+#residual sd = 4.84, R-Squared = 0.55
 
+con.b;con.e;con.s
+#                2.5 %   97.5 %
+#  (Intercept) 48.881375 51.55855
+#sunny2       7.831918 11.61802
+#                2.5 %   97.5 %
+#  (Intercept) 45.21370 48.06006
+#sunny.e2    28.19994 32.22528
+#                2.5 %   97.5 %
+#  (Intercept) 42.92434 44.47973
+#sunny.s2     9.66472 11.86437
 
 #### Let's plot the effects!
 fake$sunny<-ifelse(fake$sunny==1, "control", "sunnyD")

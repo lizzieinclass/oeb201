@@ -15,4 +15,4 @@ library("foreign")
 # and away we go!
 setwd("~/Documents/git/teaching/oeb201_bayesstats/gitclass")
 kidiq <- read.dta(file="ROS/KidIQ/kidiq.dta")
-kidiq <- read.dta(file="homeworkSep/input/child.iq.dta")
+kidiq <- read.dta(file="homework/input/child.iq.dta")
